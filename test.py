@@ -3,7 +3,7 @@ import unittest
 
 
 class TestFileName(unittest.TestCase):
-    return
+    exit
     # def test_function1(self):
     #     self.assertEqual(function1(1), 0)
 
