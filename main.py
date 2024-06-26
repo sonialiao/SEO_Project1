@@ -59,16 +59,17 @@ def display_forecast(city):
         print()
 
 
-def display_history():
-    hist = query_history('db1.db')
+def display_history(db_name):
+    hist = query_history(db_name)
     for h in hist:
         print(f"{h[0]} | {h[1]}")
+    return 0
 
 
-def weather_query():
+def weather_query(db_name):
     city = input("Enter your city: ")
     display_forecast(city)
-    insert_history('db1.db', city)
+    insert_history(db_name, city)
 
 
 def main():
@@ -85,10 +86,10 @@ def main():
             case 'q' | 'quit':
                 break
             case 'w' | 'weather':
-                weather_query()
+                weather_query(db_name)
                 print("===")
             case 'h' | 'history':
-                display_history()
+                display_history(db_name)
                 print("===")
             case _:
                 print("Not a supported request. Please try again.")
