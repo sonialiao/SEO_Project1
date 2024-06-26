@@ -1,6 +1,6 @@
 import unittest
-from main.py import get_weather, display_forecast
-from dbscript.py import create_database, query_history, insert_history, delete_database     # noqa
+from main import get_weather, display_forecast
+from dbscript import create_database, query_history, insert_history, delete_database     # noqa
 
 
 class TestFileName(unittest.TestCase):
