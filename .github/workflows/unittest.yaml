@@ -17,7 +17,6 @@ jobs:
           python -m pip install --upgrade pip pytest
           pip install coverage
           pip install requests
-          pip install json
           pip install datetime
           pip install os
           pip install sqlite3
