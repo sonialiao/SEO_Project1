@@ -18,7 +18,6 @@ jobs:
           pip install coverage
           pip install requests
           pip install datetime
-          pip install sqlite3
 
       - name: Test with unittest
         run: python3 -m unittest test.py
