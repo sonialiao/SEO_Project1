@@ -1,6 +1,6 @@
 import requests
 import datetime
-import json
+import sys
 import os
 from dbscript import create_database, delete_database, insert_history, query_history    # noqa
 
@@ -32,7 +32,7 @@ class Weather:      # weather class, contains data of the forecast
         return f'[{self.date:%H:%M}] {self.temp}F° ({self.description})'
 
 
-API_KEY = os.getenv('key')      # gets your api key
+API_KEY = os.getenv('WEATHER_API_KEY')      # gets your api key
 
 
 def get_weather(city):      # pulls all of the information from the response
@@ -42,7 +42,7 @@ def get_weather(city):      # pulls all of the information from the response
 
     if days is None:
         print("Error occurred while fetching weather from API")
-        return
+        return 1
 
     forecast = []
     for day in days:
@@ -57,8 +57,7 @@ def get_weather(city):      # pulls all of the information from the response
     return forecast
 
 
-def display_forecast(forecast, bars):   # helper method to print out the forecast
-
+def display_forecast(forecast, bars):   # helper method to print forecast
     for i in range(len(forecast)):
         entry = forecast[i]
         char_bar = bars[i]
@@ -66,22 +65,21 @@ def display_forecast(forecast, bars):   # helper method to print out the forecas
         print(print_str)
 
 
-def forecast_bars(forecast):
+def forecast_bars(forecast) -> list[str]:
     temperatures = list(map(lambda w: (w.temp), forecast))
     min_temp = min(temperatures)
     max_temp = max(temperatures)
 
-    def min_max_scale(orig):
+    def min_max_scale(orig) -> float:
         return (orig-min_temp) / (max_temp-min_temp)
 
     scaled_temps = list(map(min_max_scale, temperatures))
     adjust = 50
 
-    def draw_bar(value, adjust, char="❚"):
+    def draw_bar(value: float, adjust: int, char="❚") -> str:
         return max(int(value * adjust), 1) * char
 
     bars = list(map(lambda s: draw_bar(s, adjust), scaled_temps))
-
     return bars
 
 
@@ -93,7 +91,6 @@ def display_history(db_name):       # displays the database
 
 
 def weather_query(db_name):        # inserts the information into the database
-
     return_cond = False
     while not return_cond:
         city = input("Enter your city: ")
@@ -109,24 +106,32 @@ def weather_query(db_name):        # inserts the information into the database
 
         bars_for_graph = forecast_bars(forecast)
         display_forecast(forecast, bars_for_graph)
+        print()
 
         weather_hist = f"{forecast[0].temp}°F ({forecast[0].description})"
         insert_history(db_name, city, weather_hist)
 
 
-def main():
+def main(argv):
 
     # Set up
     quit_cond = False
     db_name = 'db1.db'
     create_database(db_name)
 
+    # read mode from arguments, if any
+    if len(argv) == 2:
+        mode = argv[1]
+    else:
+        mode = input("Select Mode: ")
+
     # loop for various input queries
     while not quit_cond:
-        mode = input("Select Mode: ")
+
         match mode:
             case 'q' | 'quit':
                 quit_cond = True
+                break
             case 'w' | 'weather':
                 weather_query(db_name)
                 print("===")
@@ -134,11 +139,14 @@ def main():
                 display_history(db_name)
                 print("===")
             case _:
-                print("Not a supported request. Please try again.")
+                print("Not a supported mode. Please try again.")
+
+        # prompt for mode again if we are not quitting
+        mode = input("Select Mode: ")
 
     # before exiting program, clear history
     delete_database(db_name)
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

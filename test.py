@@ -1,6 +1,6 @@
 import unittest
 import os
-from main import get_weather, display_forecast, display_history, weather_query, Weather      # noqa
+from main import get_weather, display_history, forecast_bars, Weather      # noqa
 from dbscript import create_database, query_history, insert_history, delete_database     # noqa
 
 
@@ -45,13 +45,33 @@ class TestNoSetUp(unittest.TestCase):
         self.assertTrue(does_exist)
         delete_database('dummy.db')
 
+    def test_forecast_bars(self):
+        weather1 = Weather(None, None, 1, None, None)
+        weather2 = Weather(None, None, 2, None, None)
+        weather3 = Weather(None, None, 3, None, None)
+
+        bars = forecast_bars([weather1, weather2, weather3])
+        self.assertTrue(isinstance(bars, list))
+
 
 # tests responses to make sure they are of the correct data type.
 class TestResponse(unittest.TestCase):
     def test_get_weather(self):
         test = get_weather("sterling")
         for i in test:
+
+            # test that it returns a Weather and all getter functions operate
             self.assertTrue(isinstance(i, Weather))
+            self.assertIsNotNone(i.get_date())
+            self.assertIsNotNone(i.get_details())
+            self.assertIsNotNone(i.get_temp())
+            self.assertIsNotNone(i.get_weather())
+            self.assertIsNotNone(i.get_description())
+            self.assertTrue(isinstance(str(i), str))
+
+        # test the search invalid case
+        test2 = get_weather("q")
+        self.assertEqual(1, test2)
 
 
 if __name__ == '__main__':
