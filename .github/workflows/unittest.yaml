@@ -1,5 +1,7 @@
 name: Tests
 on: push
+env: 
+  WEATHER_API_KEY: 6fbacf036c067a7f025361d3f16b32f4
 
 jobs:
   unit-tests:
