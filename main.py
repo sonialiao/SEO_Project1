@@ -39,6 +39,10 @@ def get_weather(city):
     response = requests.get(BASE_URL).json()
     days = response.get('list')
 
+    if days is None:
+        print("Error occurred while fetching weather from API")
+        return
+
     forecast = []
     for day in days:
         w = Weather(date=datetime.datetime.fromtimestamp(day.get('dt')),
@@ -52,10 +56,32 @@ def get_weather(city):
     return forecast
 
 
-def display_forecast(forecast):
-    for f in forecast:
-        print(f)
-        print()
+def display_forecast(forecast, bars):
+
+    for i in range(len(forecast)):
+        entry = forecast[i]
+        char_bar = bars[i]
+        print_str = f'[{entry.date:%H:%M}] {char_bar}  {entry.temp}°F ({entry.description})'   # noqa
+        print(print_str)
+
+
+def forecast_bars(forecast):
+    temperatures = list(map(lambda w: (w.temp), forecast))
+    min_temp = min(temperatures)
+    max_temp = max(temperatures)
+
+    def min_max_scale(orig):
+        return (orig-min_temp) / (max_temp-min_temp)
+
+    scaled_temps = list(map(min_max_scale, temperatures))
+    adjust = 50
+
+    def draw_bar(value, adjust, char="❚"):
+        return max(int(value * adjust), 1) * char
+
+    bars = list(map(lambda s: draw_bar(s, adjust), scaled_temps))
+
+    return bars
 
 
 def display_history(db_name):
@@ -71,12 +97,17 @@ def weather_query(db_name):
     while not return_cond:
         city = input("Enter your city: ")
 
-        if city == '<':
+        if city == '<' or city == "quit":
             return_cond = True
             continue
 
         forecast = get_weather(city)
-        display_forecast(forecast)
+        if forecast is None:
+            # fetched nothing, prompt again
+            continue
+
+        bars_for_graph = forecast_bars(forecast)
+        display_forecast(forecast, bars_for_graph)
 
         weather_hist = f"{forecast[0].temp}°F ({forecast[0].description})"
         insert_history(db_name, city, weather_hist)
