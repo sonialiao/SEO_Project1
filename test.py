@@ -1,6 +1,6 @@
 import unittest
 import os
-from main import get_weather, display_forecast, display_history, weather_query      # noqa
+from main import get_weather, display_forecast, display_history, weather_query, Weather      # noqa
 from dbscript import create_database, query_history, insert_history, delete_database     # noqa
 
 
@@ -44,6 +44,14 @@ class TestNoSetUp(unittest.TestCase):
         does_exist = os.path.exists('dummy.db')
         self.assertTrue(does_exist)
         delete_database('dummy.db')
+
+
+# tests responses to make sure they are of the correct data type.
+class TestResponse(unittest.TestCase):
+    def test_get_weather(self):
+        test = get_weather("sterling")
+        for i in test:
+            self.assertTrue(isinstance(i, Weather))
 
 
 if __name__ == '__main__':
