@@ -6,6 +6,7 @@ Modes:
 - 'w' or 'weather'
     - enter the name of the city you want to see the forecast for
     - optional: include the state and/or country in the format {city, state, country} to specify the location
+    - enter '<' to leave the weather query mode
 - 'h' or 'history'
     - returns a list of cities looked up so far
 - 'q' or 'quit'

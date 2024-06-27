@@ -9,7 +9,8 @@ def create_database(db_name):
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS search_hist (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            city VARCHAR(255) default NULL)
+            city VARCHAR(255) default NULL,
+            forecast_str VARCHAR(255) default NULL)
         ''')
         conn.commit()
     except sqlite3.Error as e:
@@ -18,10 +19,11 @@ def create_database(db_name):
         conn.close()
 
 
-def insert_history(db_name, city):
+def insert_history(db_name, city, forecast_str):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO search_hist (city) VALUES (?)', (city,))
+    cursor.execute('''INSERT INTO search_hist (city, forecast_str)
+                   VALUES (?, ?)''', (city, forecast_str))
     conn.commit()
     conn.close()
 

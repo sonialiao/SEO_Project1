@@ -52,8 +52,7 @@ def get_weather(city):
     return forecast
 
 
-def display_forecast(city):
-    forecast = get_weather(city)
+def display_forecast(forecast):
     for f in forecast:
         print(f)
         print()
@@ -62,14 +61,25 @@ def display_forecast(city):
 def display_history(db_name):
     hist = query_history(db_name)
     for h in hist:
-        print(f"{h[0]} | {h[1]}")
+        print(f"{h[0]} | {h[1]} | {h[2]}")
     return 0
 
 
 def weather_query(db_name):
-    city = input("Enter your city: ")
-    display_forecast(city)
-    insert_history(db_name, city)
+
+    return_cond = False
+    while not return_cond:
+        city = input("Enter your city: ")
+
+        if city == '<':
+            return_cond = True
+            continue
+
+        forecast = get_weather(city)
+        display_forecast(forecast)
+
+        weather_hist = f"{forecast[0].temp}°F ({forecast[0].description})"
+        insert_history(db_name, city, weather_hist)
 
 
 def main():
@@ -84,7 +94,7 @@ def main():
         mode = input("Select Mode: ")
         match mode:
             case 'q' | 'quit':
-                break
+                quit_cond = True
             case 'w' | 'weather':
                 weather_query(db_name)
                 print("===")
