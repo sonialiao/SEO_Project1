@@ -1,10 +1,11 @@
 import requests
 import datetime
 import json
+import os
 from dbscript import create_database, delete_database, insert_history, query_history    # noqa
 
 
-class Weather:
+class Weather:      # weather class, contains data of the forecast
     def __init__(self, date, details, temp, weather, description):
         self.date = date
         self.details = details
@@ -31,10 +32,10 @@ class Weather:
         return f'[{self.date:%H:%M}] {self.temp}F° ({self.description})'
 
 
-API_KEY = "6fbacf036c067a7f025361d3f16b32f4"
+API_KEY = os.getenv('key')      # gets your api key
 
 
-def get_weather(city):
+def get_weather(city):      # pulls all of the information from the response
     BASE_URL = f'https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=imperial'  # noqa
     response = requests.get(BASE_URL).json()
     days = response.get('list')
@@ -56,7 +57,7 @@ def get_weather(city):
     return forecast
 
 
-def display_forecast(forecast, bars):
+def display_forecast(forecast, bars):   # helper method to print out the forecast
 
     for i in range(len(forecast)):
         entry = forecast[i]
@@ -84,14 +85,14 @@ def forecast_bars(forecast):
     return bars
 
 
-def display_history(db_name):
+def display_history(db_name):       # displays the database
     hist = query_history(db_name)
     for h in hist:
         print(f"{h[0]} | {h[1]} | {h[2]}")
     return 0
 
 
-def weather_query(db_name):
+def weather_query(db_name):        # inserts the information into the database
 
     return_cond = False
     while not return_cond:
