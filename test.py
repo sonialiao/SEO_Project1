@@ -9,9 +9,9 @@ class TestWithDatabase(unittest.TestCase):
     def setUp(self):
         # set up dummy database and entries before each test
         create_database('unittest.db')
-        insert_history('unittest.db', "city1")
-        insert_history('unittest.db', "city2")
-        insert_history('unittest.db', "city3")
+        insert_history('unittest.db', "city1", "weather1")
+        insert_history('unittest.db', "city2", "weather2")
+        insert_history('unittest.db', "city3", "weather3")
 
     def tearDown(self):
         # clear dummy database after each test
@@ -26,7 +26,7 @@ class TestWithDatabase(unittest.TestCase):
         self.assertEqual(len(rows), 3)
 
     def test_insert_history(self):
-        insert_history('unittest.db', "city4")
+        insert_history('unittest.db', "city4", "weather4")
         rows = query_history('unittest.db')
         self.assertEqual(len(rows), 4)
 
